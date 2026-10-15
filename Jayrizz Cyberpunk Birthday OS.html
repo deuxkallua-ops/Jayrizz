@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAYRIZZ // CYBER-BIRTHDAY OS 2026</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron, Rajdhani, Expletus Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Expletus+Sans:ital,wght@1,600;1,700&family=Orbitron:wght@500;700;900&family=Rajdhani:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --neon-pink: #ff2a85;
+            --hot-pink: #ff69b4;
+            --cyber-cyan: #00f3ff;
+            --pastel-pink: #ffd1dc;
+            --cyber-bg: #140510;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--cyber-bg);
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(255, 42, 133, 0.25) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                linear-gradient(0deg, rgba(20, 5, 16, 0.95), rgba(20, 5, 16, 0.95));
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        /* Sci-Fi Grid Overlay */
+        .cyber-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 42, 133, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 42, 133, 0.08) 1px, transparent 1px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.3) 50%,
+                rgba(0, 0, 0, 0.3)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.5;
+        }
+
+        /* Fonts */
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .font-expletus { font-family: 'Expletus Sans', cursive; }
+
+        /* Cyber Panels */
+        .cyber-panel {
+            background: linear-gradient(135deg, rgba(255, 209, 220, 0.12) 0%, rgba(255, 42, 133, 0.08) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 42, 133, 0.4);
+            box-shadow: 
+                0 0 25px rgba(255, 42, 133, 0.25),
+                inset 0 0 15px rgba(255, 42, 133, 0.15);
+            position: relative;
+        }
+
+        /* HUD Corners */
+        .hud-corner {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-color: var(--cyber-cyan);
+            pointer-events: none;
+        }
+        .hud-tl { top: -2px; left: -2px; border-top: 2px solid; border-left: 2px solid; }
+        .hud-tr { top: -2px; right: -2px; border-top: 2px solid; border-right: 2px solid; }
+        .hud-bl { bottom: -2px; left: -2px; border-bottom: 2px solid; border-left: 2px solid; }
+        .hud-br { bottom: -2px; right: -2px; border-bottom: 2px solid; border-right: 2px solid; }
+
+        /* Cyber Ribbon Borders */
+        .cyber-ribbon-border {
+            position: relative;
+        }
+        .cyber-ribbon-border::before, .cyber-ribbon-border::after {
+            content: '';
+            position: absolute;
+            left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-pink), var(--cyber-cyan), var(--neon-pink), transparent);
+            animation: cyberGlow 2.5s infinite linear;
+        }
+        .cyber-ribbon-border::before { top: 0; }
+        .cyber-ribbon-border::after { bottom: 0; }
+
+        @keyframes cyberGlow {
+            0% { background-position: -200px 0; }
+            100% { background-position: 200px 0; }
+        }
+
+        /* Buttons */
+        .cyber-btn {
+            background: linear-gradient(90deg, #ff2a85 0%, #ff69b4 100%);
+            color: #fff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 20px rgba(255, 42, 133, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.2s ease;
+        }
+        .cyber-btn:hover {
+            box-shadow: 0 0 30px rgba(255, 42, 133, 0.9), 0 0 10px rgba(0, 243, 255, 0.8);
+            transform: translateY(-2px);
+        }
+        .cyber-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Typewriter Cursor */
+        .cyber-cursor::after {
+            content: '_';
+            color: var(--cyber-cyan);
+            font-weight: bold;
+            animation: blink 0.7s infinite;
+            text-shadow: 0 0 8px var(--cyber-cyan);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Holo Polaroid Frame */
+        .holo-polaroid {
+            background: rgba(20, 5, 16, 0.85);
+            border: 1px solid var(--neon-pink);
+            box-shadow: 
+                0 0 20px rgba(255, 42, 133, 0.3),
+                inset 0 0 10px rgba(0, 243, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .holo-polaroid:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 42, 133, 0.6), 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+
+        /* Jumpscare Animations & Overlay */
+        @keyframes jumpscareShake {
+            0% { transform: scale(1) translate(0, 0) rotate(0deg); }
+            10% { transform: scale(1.3) translate(-20px, 15px) rotate(-5deg); }
+            20% { transform: scale(1.5) translate(25px, -20px) rotate(8deg); }
+            30% { transform: scale(1.2) translate(-15px, -15px) rotate(-8deg); }
+            40% { transform: scale(1.6) translate(20px, 20px) rotate(6deg); }
+            50% { transform: scale(1.4) translate(-25px, 10px) rotate(-10deg); }
+            60% { transform: scale(1.7) translate(15px, -25px) rotate(12deg); }
+            70% { transform: scale(1.3) translate(-20px, -10px) rotate(-6deg); }
+            80% { transform: scale(1.5) translate(20px, 15px) rotate(8deg); }
+            90% { transform: scale(1.2) translate(-10px, -20px) rotate(-4deg); }
+            100% { transform: scale(1) translate(0, 0) rotate(0deg); }
+        }
+
+        @keyframes flashRed {
+            0%, 100% { background-color: rgba(255, 0, 0, 0.95); }
+            50% { background-color: rgba(0, 0, 0, 0.98); }
+        }
+
+        .jumpscare-active {
+            animation: jumpscareShake 0.08s infinite alternate !important;
+        }
+
+        .jumpscare-flash {
+            animation: flashRed 0.1s infinite !important;
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between items-center relative text-pink-100 min-h-screen select-none p-3 md:p-6">
+
+    <!-- SCI-FI OVERLAYS -->
+    <div class="cyber-grid"></div>
+    <div class="scanlines"></div>
+
+    <!-- JUMPSCARE FULLSCREEN OVERLAY -->
+    <div id="jumpscare-overlay" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center p-4 bg-black/95">
+        <div class="relative w-full max-w-lg flex flex-col items-center text-center space-y-4">
+            <img 
+                id="jumpscare-img" 
+                src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=1000&auto=format&fit=crop&q=80" 
+                alt="CAT JUMPSCARE" 
+                class="w-80 h-80 md:w-96 md:h-96 object-cover rounded-3xl border-8 border-rose-600 shadow-[0_0_80px_#ff0000] filter contrast-200 saturate-200"
+            />
+            <h1 class="font-orbitron text-3xl md:text-5xl font-black text-rose-500 tracking-widest uppercase drop-shadow-[0_0_20px_#ff0000]">
+                😱 BOOO! PAKISS BABY! 💋
+            </h1>
+            <p class="font-expletus text-pink-200 text-lg md:text-xl font-bold italic">
+                NAGULAT KA NO?! HAPPY BIRTHDAY JAYRIZZ! 🎉
+            </p>
+            <button 
+                onclick="closeJumpscare()" 
+                class="mt-6 px-8 py-4 rounded-2xl bg-pink-600 hover:bg-pink-500 text-white font-orbitron font-bold text-sm tracking-widest uppercase shadow-[0_0_25px_#ff2a85] transition-all">
+                WAAAH! CLOSE SURPRISE 💖
+            </button>
+        </div>
+    </div>
+
+    <!-- AUDIO TOGGLE CONTROLS -->
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <button id="audio-toggle-btn" onclick="toggleAudio()" class="cyber-panel px-3 py-1.5 rounded-xl flex items-center gap-2 text-xs font-bold text-cyan-300 hover:text-white transition-all">
+            <i id="audio-icon" class="fa-solid fa-volume-high text-cyan-400"></i>
+            <span id="audio-status">SFX: ON</span>
+        </button>
+    </div>
+
+    <!-- HEADER / CYBER RIBBON BANNER -->
+    <header class="w-full max-w-lg text-center pt-2 pb-2 z-20">
+        <div class="inline-flex items-center gap-3 cyber-panel cyber-ribbon-border px-6 py-2 rounded-2xl shadow-lg">
+            <span class="text-pink-400 text-sm animate-pulse">🎀 [CYBER-NET]</span>
+            <span class="font-orbitron text-xs md:text-sm text-pink-200 tracking-widest font-bold uppercase">
+                JAYRIZZ // V.2026
+            </span>
+            <span class="text-cyan-400 text-sm animate-pulse">⚡</span>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="w-full max-w-md md:max-w-xl my-auto z-20 py-4">
+
+        <!-- 1. AUTHENTICATION LOCK SCREEN -->
+        <div id="lock-screen" class="cyber-panel rounded-3xl p-6 md:p-10 text-center relative transition-all duration-500">
+            <div class="hud-corner hud-tl"></div>
+            <div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div>
+            <div class="hud-corner hud-br"></div>
+
+            <div class="mb-4">
+                <span class="text-4xl filter drop-shadow-[0_0_10px_#ff2a85]">🎀</span>
+            </div>
+            
+            <h1 class="font-orbitron text-xl md:text-2xl text-pink-300 font-black tracking-wider mb-1 uppercase">
+                MASTER KATE TAYLAN'S DOMAIN
+            </h1>
+            <p class="text-xs text-cyan-300 font-mono tracking-widest uppercase mb-6">
+                [SYSTEM LOCKED] // ENTER PASSPHRASE TO DECRYPT
+            </p>
+
+            <form onsubmit="verifyPassword(event)" class="space-y-4">
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="pass-input" 
+                        placeholder="ENTER PASSWORD..." 
+                        class="w-full px-5 py-4 rounded-2xl border border-pink-500/50 focus:border-cyan-400 focus:outline-none text-center font-orbitron text-lg font-bold text-pink-100 placeholder-pink-600/60 bg-black/60 shadow-inner transition-all tracking-widest"
+                        autocomplete="off"
+                        required
+                    />
+                </div>
+                
+                <div id="error-alert" class="hidden text-rose-400 font-mono font-bold text-xs bg-rose-950/80 border border-rose-500/50 py-2.5 px-4 rounded-xl animate-pulse">
+                    ⚠️ ACCESS DENIED: INVALID KEYCODE. (PASSWORD: "RATBU")
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full py-4 rounded-2xl cyber-btn font-orbitron font-black text-sm tracking-widest uppercase flex items-center justify-center gap-2">
+                    <span>UNLOCK PROTOCOL</span>
+                    <i class="fa-solid fa-key text-xs"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- 2. WISH CORE MATRIX INPUT -->
+        <div id="wishes-screen" class="hidden cyber-panel rounded-3xl p-6 md:p-8 text-center transition-all duration-500">
+            <div class="hud-corner hud-tl"></div>
+            <div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div>
+            <div class="hud-corner hud-br"></div>
+
+            <div class="text-4xl mb-2 filter drop-shadow-[0_0_12px_#00f3ff]">🌌</div>
+            <h2 class="font-orbitron text-xl md:text-2xl font-black text-pink-300 tracking-wider mb-2">
+                Lagay mo yung wish mo para satin baby🥵
+            </h2>
+            <p class="text-xs text-pink-200/80 font-mono mb-5 leading-relaxed">
+                BEFORE DECRYPTING YOUR MESSAGES, INPUT YOUR YEAR 2026 WISHES TO THE HOLOGRAPHIC CORE MATRIX. 🔮
+            </p>
+
+            <div class="relative mb-6">
+                <textarea 
+                    id="wish-textarea" 
+                    rows="4" 
+                    placeholder="TYPE YOUR BIRTHDAY WISHES HERE... (e.g., Board Exam Pass, Cyber Nurse Glowup, Unlimited Happiness!)" 
+                    class="w-full p-4 rounded-2xl border border-pink-500/40 focus:border-cyan-400 focus:outline-none text-pink-100 bg-black/70 text-xs md:text-sm font-semibold shadow-inner resize-none font-mono"
+                ></textarea>
+                <div class="absolute bottom-3 right-3 text-cyan-400 text-xs font-mono">CORE v2.0</div>
+            </div>
+
+            <button 
+                onclick="saveWishesAndStart()" 
+                class="w-full py-4 rounded-2xl cyber-btn font-orbitron font-bold text-xs md:text-sm tracking-widest uppercase flex items-center justify-center gap-2">
+                <span>TRANSMIT WISHES & START JOURNEY ✨</span>
+            </button>
+        </div>
+
+        <!-- 3. PHRASE-BY-PHRASE DISPLAY MODULE -->
+        <div id="presentation-screen" class="hidden cyber-panel rounded-3xl p-5 md:p-8 transition-all duration-500 relative flex flex-col items-center">
+            <div class="hud-corner hud-tl"></div>
+            <div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div>
+            <div class="hud-corner hud-br"></div>
+
+            <!-- Top Tracker & Controls -->
+            <div class="w-full mb-4">
+                <div class="flex justify-between items-center mb-1.5 font-mono text-xs">
+                    <span id="phrase-counter" class="text-cyan-300 font-bold bg-cyan-950/80 border border-cyan-500/40 px-3 py-1 rounded-full">
+                        NODE: 01 / 21
+                    </span>
+                    <button id="autoplay-btn" onclick="toggleAutoPlay()" class="text-xs font-mono font-bold px-3 py-1 rounded-full border border-pink-500/50 bg-black/50 text-pink-300 hover:text-cyan-300 transition-all flex items-center gap-1.5">
+                        <i id="autoplay-icon" class="fa-solid fa-play text-[10px]"></i>
+                        <span id="autoplay-text">AUTO: OFF</span>
+                    </button>
+                </div>
+                <div class="w-full bg-black/60 rounded-full h-2 overflow-hidden border border-pink-500/30">
+                    <div id="progress-indicator" class="bg-gradient-to-r from-pink-500 via-rose-400 to-cyan-400 h-full w-0 transition-all duration-300 shadow-[0_0_8px_#ff2a85]"></div>
+                </div>
+            </div>
+
+            <!-- CLEAN MEME CAT POLAROID (NO CAPTIONS) -->
+            <div onclick="tapCatPhoto()" class="holo-polaroid w-full rounded-2xl p-3 md:p-4 mb-5 relative cursor-pointer overflow-hidden group">
+                <div class="w-full h-56 md:h-64 rounded-xl overflow-hidden bg-black/90 border border-pink-500/30 relative flex items-center justify-center">
+                    <img 
+                        id="meme-cat-img" 
+                        src="" 
+                        alt="Meme Cat" 
+                        class="w-full h-full object-cover transition-all duration-300 filter saturate-110"
+                        onerror="handleImageError(this)"
+                    />
+                    <!-- Subtle Holographic Shimmer -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/5 to-pink-500/10 pointer-events-none"></div>
+                </div>
+            </div>
+
+            <!-- TYPEWRITER TEXT BOX -->
+            <div onclick="tapToFastForward()" class="w-full min-h-[100px] bg-black/80 border border-pink-500/40 rounded-2xl p-4 md:p-5 mb-5 shadow-inner flex items-center justify-center text-center cursor-pointer relative overflow-hidden">
+                <p id="phrase-text" class="font-expletus text-pink-100 font-bold text-xl md:text-2xl leading-relaxed cyber-cursor italic">
+                    <!-- Typing text injects here -->
+                </p>
+            </div>
+
+            <!-- NAVIGATION BUTTONS -->
+            <div class="w-full flex gap-3">
+                <button 
+                    id="back-btn" 
+                    onclick="stepBack()" 
+                    class="px-5 py-3.5 rounded-2xl border border-pink-500/40 text-pink-300 font-orbitron font-bold hover:bg-pink-500/20 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <button 
+                    id="forward-btn" 
+                    onclick="stepForward()" 
+                    class="flex-1 py-3.5 px-6 rounded-2xl cyber-btn font-orbitron font-bold text-xs md:text-sm tracking-widest uppercase flex items-center justify-center gap-2">
+                    <span id="forward-btn-text">ADVANCE NODE 💕</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. FINAL CELEBRATION PROTOCOL -->
+        <div id="finale-screen" class="hidden cyber-panel rounded-3xl p-6 md:p-8 text-center transition-all duration-500 space-y-6">
+            <div class="hud-corner hud-tl"></div>
+            <div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div>
+            <div class="hud-corner hud-br"></div>
+
+            <div class="text-5xl animate-bounce filter drop-shadow-[0_0_15px_#ff2a85]">👑🎀🥂</div>
+
+            <div>
+                <span class="font-orbitron text-xs text-cyan-300 font-bold tracking-widest uppercase block mb-1">
+                    [PROTOCOL COMPLETED]
+                </span>
+                <h1 class="font-orbitron text-2xl md:text-4xl font-black text-pink-300 tracking-wider uppercase">
+                    HAPPY BIRTHDAY JAYRIZZ VARGAS!
+                </h1>
+            </div>
+
+            <!-- SEALED WISHES DISPLAY -->
+            <div class="bg-black/80 rounded-2xl p-5 border border-pink-500/50 text-left relative overflow-hidden shadow-[0_0_20px_rgba(255,42,133,0.2)]">
+                <div class="flex items-center justify-between pb-2 border-b border-pink-500/30 mb-3 font-mono text-xs">
+                    <span class="text-cyan-300 font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-pink-400"></i>
+                        HOLOGRAPHIC WISH MATRIX:
+                    </span>
+                    <span class="text-pink-400">SEALED v2026</span>
+                </div>
+                <p id="display-user-wishes" class="font-expletus text-pink-100 text-lg md:text-xl font-bold leading-relaxed italic">
+                    <!-- Sealed wishes appear here -->
+                </p>
+            </div>
+
+            <!-- SIGNATURE BOX -->
+            <div class="p-5 bg-gradient-to-r from-pink-950/60 via-purple-950/60 to-pink-950/60 border border-cyan-400/50 rounded-2xl text-center shadow-[0_0_15px_rgba(0,243,255,0.2)]">
+                <p class="font-mono text-[11px] text-cyan-300 font-bold uppercase tracking-widest mb-1">TRANSMITTED WITH LOVE BY:</p>
+                <p class="font-orbitron text-xl md:text-2xl font-black text-pink-200 tracking-wide">
+                    - Kate Taylan Batumbakal
+                </p>
+            </div>
+
+            <!-- EXTRA SURPRISE JUMPSCARE TRIGGER BUTTON -->
+            <button 
+                onclick="triggerJumpscare()" 
+                class="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-600 to-pink-600 text-white font-orbitron font-black text-sm tracking-widest uppercase hover:brightness-125 shadow-[0_0_25px_#ff0055] transition-all flex items-center justify-center gap-2 animate-pulse">
+                <i class="fa-solid fa-gift text-sm"></i>
+                <span>CLICK FOR SECRET FINAL GIFT 🎁🔥</span>
+            </button>
+
+            <!-- REPLAY BUTTON -->
+            <button 
+                onclick="replayCard()" 
+                class="w-full py-3.5 rounded-2xl border border-pink-500/50 text-pink-300 font-orbitron font-bold text-xs tracking-widest uppercase hover:bg-pink-500/20 active:scale-95 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>RE-INITIATE PROTOCOL</span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full max-w-lg text-center py-2 text-xs font-mono text-pink-400/80 z-20">
+        JAYRIZZ_BIRTHDAY_OS_2026 // CYBER-PINK EDITION 🎀
+    </footer>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // WEB AUDIO API SOUND SYNTHESIS (Zero External Audio Files)
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('audio-status').textContent = soundEnabled ? "SFX: ON" : "SFX: OFF";
+            document.getElementById('audio-icon').className = soundEnabled ? "fa-solid fa-volume-high text-cyan-400" : "fa-solid fa-volume-xmark text-rose-400";
+            if (soundEnabled) playSound('click');
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                const now = ctx.currentTime;
+
+                if (type === 'type') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600 + Math.random() * 200, now);
+                    gain.gain.setValueAtTime(0.03, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'unlock') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.3);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'jumpscare') {
+                    // Harsh synthesized jumpscare roar/scream
+                    const osc2 = ctx.createOscillator();
+                    const gain2 = ctx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(ctx.destination);
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.linearRampToValueAtTime(900, now + 0.1);
+                    osc.frequency.linearRampToValueAtTime(120, now + 0.8);
+
+                    osc2.type = 'square';
+                    osc2.frequency.setValueAtTime(220, now);
+                    osc2.frequency.linearRampToValueAtTime(1100, now + 0.15);
+                    osc2.frequency.linearRampToValueAtTime(80, now + 0.8);
+
+                    gain.gain.setValueAtTime(0.4, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+                    gain2.gain.setValueAtTime(0.4, now);
+                    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+                    osc.start(now);
+                    osc2.start(now);
+                    osc.stop(now + 0.9);
+                    osc2.stop(now + 0.9);
+                }
+            } catch (err) {
+                console.log("Audio play suppressed:", err);
+            }
+        }
+
+        // EXACT 21 PHRASES WITH HIGH-RELIABILITY CAT PHOTO URLS (NO CAPTIONS)
+        const phrases = [
+            { text: "Hello, pink themed baddie!!!", img: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&auto=format&fit=crop&q=80" },
+            { text: "Ano tawag sa aso na pumupunta sa inuman?", img: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800&auto=format&fit=crop&q=80" },
+            { text: "Edi Pulutan", img: "https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=800&auto=format&fit=crop&q=80" },
+            { text: "Pwede kana mag-inom ng tequila", img: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=800&auto=format&fit=crop&q=80" },
+            { text: "KASI", img: "https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=800&auto=format&fit=crop&q=80" },
+            { text: "HAPPY NA BIRTHDAY MO PA", img: "https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=800&auto=format&fit=crop&q=80" },
+            { text: "HAPPY LEGALITY JAYRIZZ VARGAS !!!", img: "https://images.unsplash.com/photo-1561948955-570b270e7c36?w=800&auto=format&fit=crop&q=80" },
+            { text: "IKAW YUNG CUTE KONG KAIBIGAN NA SHITZU", img: "https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?w=800&auto=format&fit=crop&q=80" },
+            { text: "Kahit di tayo magkita, sayo parin hahaba to!", img: "https://images.unsplash.com/photo-1513245543132-31f507417b26?w=800&auto=format&fit=crop&q=80" },
+            { text: "Yung puso ko kasi", img: "https://images.unsplash.com/photo-1574144611937-0df059b5ef3e?w=800&auto=format&fit=crop&q=80" },
+            { text: "Kahit di na tayo nagkikita, ikaw parin ang icing sa mamon ko", img: "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=800&auto=format&fit=crop&q=80" },
+            { text: "Sana maging nurse kana para libre nlng check-up ko", img: "https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=800&auto=format&fit=crop&q=80" },
+            { text: "Sana kahit nasa verge ka ng hard times sa buhay mo, maging matatag ka parin at isipin moko baby ko", img: "https://images.unsplash.com/photo-1495360010541-f48722b34f7d?w=800&auto=format&fit=crop&q=80" },
+            { text: "Sana samahan nyo na din ako sa club ta itulak nyo ako sa pogi", img: "https://images.unsplash.com/photo-1501820488136-72669149e0d4?w=800&auto=format&fit=crop&q=80" },
+            { text: "Lastly", img: "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=800&auto=format&fit=crop&q=80" },
+            { text: "Sana hanggang future, tayo parin friends", img: "https://images.unsplash.com/photo-1533743983669-94fa5c4338ec?w=800&auto=format&fit=crop&q=80" },
+            { text: "I wish you the best", img: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800&auto=format&fit=crop&q=80" },
+            { text: "Wait lng gift mo ahh, nasa shenzhen sorting Center pa ata .", img: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&auto=format&fit=crop&q=80" },
+            { text: "Pakiss nga baby", img: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=800&auto=format&fit=crop&q=80" },
+            { text: "BY :", img: "https://images.unsplash.com/photo-1506755855567-92ff770e8d00?w=800&auto=format&fit=crop&q=80" },
+            { text: "PINAKAMASARAP MONG KAIBIGAN.", img: "https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800&auto=format&fit=crop&q=80" }
+        ];
+
+        let index = 0;
+        let typeTimer = null;
+        let autoPlayTimer = null;
+        let isAutoPlay = false;
+        let isTyping = false;
+        let savedWishes = "";
+
+        // Fallback for broken image URLs
+        function handleImageError(img) {
+            img.onerror = null;
+            img.src = "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&auto=format&fit=crop&q=80";
+        }
+
+        // 1. Password Verification (Case-Insensitive & Trimmed)
+        function verifyPassword(e) {
+            e.preventDefault();
+            getAudioContext();
+            
+            const inputVal = document.getElementById('pass-input').value.trim().toUpperCase();
+            const errorEl = document.getElementById('error-alert');
+
+            if (inputVal === 'RATBU') {
+                playSound('unlock');
+                errorEl.classList.add('hidden');
+                document.getElementById('lock-screen').classList.add('hidden');
+                document.getElementById('wishes-screen').classList.remove('hidden');
+            } else {
+                playSound('error');
+                errorEl.classList.remove('hidden');
+                document.getElementById('pass-input').value = '';
+            }
+        }
+
+        // 2. Wishes Core Protocol
+        function saveWishesAndStart() {
+            playSound('click');
+            const textarea = document.getElementById('wish-textarea');
+            savedWishes = textarea.value.trim() || "Unlimited cyber glowup, passing all nursing board exams, and infinite happiness!";
+
+            document.getElementById('wishes-screen').classList.add('hidden');
+            document.getElementById('presentation-screen').classList.remove('hidden');
+            index = 0;
+            renderPhrase();
+        }
+
+        // 3. Render Phrase Engine
+        function renderPhrase() {
+            // Clear running timers
+            if (typeTimer) clearTimeout(typeTimer);
+            if (autoPlayTimer) clearTimeout(autoPlayTimer);
+
+            const curr = phrases[index];
+            const textEl = document.getElementById('phrase-text');
+            const imgEl = document.getElementById('meme-cat-img');
+            const counterEl = document.getElementById('phrase-counter');
+            const progressEl = document.getElementById('progress-indicator');
+            const backBtn = document.getElementById('back-btn');
+            const forwardText = document.getElementById('forward-btn-text');
+
+            counterEl.textContent = `NODE: ${String(index + 1).padStart(2, '0')} / ${phrases.length}`;
+            progressEl.style.width = `${((index + 1) / phrases.length) * 100}%`;
+
+            backBtn.disabled = index === 0;
+            forwardText.textContent = (index === phrases.length - 1) ? "FINAL CELEBRATION 🎉" : "ADVANCE NODE 💕";
+
+            // Fade Image Transition
+            imgEl.style.opacity = "0.3";
+            setTimeout(() => {
+                imgEl.src = curr.img;
+                imgEl.style.opacity = "1";
+            }, 100);
+
+            // Typewriter Animation Logic
+            textEl.textContent = "";
+            let c = 0;
+            isTyping = true;
+
+            function typeStep() {
+                if (c < curr.text.length) {
+                    textEl.textContent += curr.text.charAt(c);
+                    if (c % 2 === 0) playSound('type');
+                    c++;
+                    typeTimer = setTimeout(typeStep, 35);
+                } else {
+                    isTyping = false;
+                    if (isAutoPlay) {
+                        autoPlayTimer = setTimeout(stepForward, 2500);
+                    }
+                }
+            }
+            typeStep();
+        }
+
+        // Tap text box to skip typing animation
+        function tapToFastForward() {
+            if (isTyping) {
+                if (typeTimer) clearTimeout(typeTimer);
+                document.getElementById('phrase-text').textContent = phrases[index].text;
+                isTyping = false;
+                if (isAutoPlay) {
+                    if (autoPlayTimer) clearTimeout(autoPlayTimer);
+                    autoPlayTimer = setTimeout(stepForward, 2500);
+                }
+            }
+        }
+
+        // Tap meme cat photo for mini confetti
+        function tapCatPhoto() {
+            playSound('click');
+            confetti({
+                particleCount: 15,
+                spread: 40,
+                origin: { y: 0.5 },
+                colors: ['#ff2a85', '#00f3ff', '#ffd1dc']
+            });
+        }
+
+        // Step Forward Navigation
+        function stepForward() {
+            playSound('click');
+            if (index < phrases.length - 1) {
+                index++;
+                renderPhrase();
+            } else {
+                showFinale();
+            }
+        }
+
+        // Step Back Navigation
+        function stepBack() {
+            playSound('click');
+            if (index > 0) {
+                index--;
+                renderPhrase();
+            }
+        }
+
+        // Auto-Play Toggle
+        function toggleAutoPlay() {
+            isAutoPlay = !isAutoPlay;
+            playSound('click');
+            
+            const btnText = document.getElementById('autoplay-text');
+            const btnIcon = document.getElementById('autoplay-icon');
+
+            if (isAutoPlay) {
+                btnText.textContent = "AUTO: ON";
+                btnIcon.className = "fa-solid fa-pause text-[10px]";
+                if (!isTyping) {
+                    autoPlayTimer = setTimeout(stepForward, 1500);
+                }
+            } else {
+                btnText.textContent = "AUTO: OFF";
+                btnIcon.className = "fa-solid fa-play text-[10px]";
+                if (autoPlayTimer) clearTimeout(autoPlayTimer);
+            }
+        }
+
+        // 4. Show Final Celebration Screen & Trigger Jumpscare
+        function showFinale() {
+            if (autoPlayTimer) clearTimeout(autoPlayTimer);
+            playSound('unlock');
+
+            document.getElementById('presentation-screen').classList.add('hidden');
+            document.getElementById('finale-screen').classList.remove('hidden');
+
+            document.getElementById('display-user-wishes').textContent = `"${savedWishes}"`;
+
+            // Confetti Blast
+            const duration = 4 * 1000;
+            const animationEnd = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 7,
+                    angle: 60,
+                    spread: 65,
+                    origin: { x: 0 },
+                    colors: ['#ff2a85', '#00f3ff', '#ff69b4', '#ffffff']
+                });
+                confetti({
+                    particleCount: 7,
+                    angle: 120,
+                    spread: 65,
+                    origin: { x: 1 },
+                    colors: ['#ff2a85', '#00f3ff', '#ff69b4', '#ffffff']
+                });
+
+                if (Date.now() < animationEnd) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+
+            // Auto-trigger hilarious jumpscare after 3 seconds of celebration
+            setTimeout(() => {
+                triggerJumpscare();
+            }, 3200);
+        }
+
+        // 5. Jumpscare Surprise Trigger Logic
+        function triggerJumpscare() {
+            playSound('jumpscare');
+            const overlay = document.getElementById('jumpscare-overlay');
+            const img = document.getElementById('jumpscare-img');
+            
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex', 'jumpscare-flash');
+            img.classList.add('jumpscare-active');
+
+            // Device vibration if supported
+            if ("vibrate" in navigator) {
+                navigator.vibrate([200, 100, 200, 100, 300]);
+            }
+        }
+
+        function closeJumpscare() {
+            playSound('click');
+            const overlay = document.getElementById('jumpscare-overlay');
+            const img = document.getElementById('jumpscare-img');
+
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex', 'jumpscare-flash');
+            img.classList.remove('jumpscare-active');
+        }
+
+        // Replay Flow
+        function replayCard() {
+            playSound('click');
+            document.getElementById('finale-screen').classList.add('hidden');
+            document.getElementById('presentation-screen').classList.remove('hidden');
+            index = 0;
+            renderPhrase();
+        }
+    </script>
+</body>
+</html>
